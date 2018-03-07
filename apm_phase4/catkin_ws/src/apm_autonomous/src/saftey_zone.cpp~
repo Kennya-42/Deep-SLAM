@@ -1,0 +1,180 @@
+/*
+ This node is created to extract the range data from the converted    pointcloud to laserscan. The range data will be used to determine if there is an object in the cart's path and the cart will stop.
+*/
+
+#include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
+#include <std_msgs/Float32.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+using namespace std;
+
+ros::Publisher pub_stop_clear;
+
+//ros::Subscriber sub_laserscan;
+ros::Subscriber sub_cart_speed;
+
+ros::Subscriber sub_ultrasonic_1,
+                sub_ultrasonic_2,
+                sub_ultrasonic_3,
+                sub_ultrasonic_4,
+                sub_ultrasonic_5,
+                sub_ultrasonic_6,
+                sub_ultrasonic_7;
+
+float current_cart_speed;
+
+// Stop zone distance constants
+#define MIN_STOP_ZONE_LENGTH 3.0
+#define DECELERATION_CONSTANT (0.1 * 9.81)
+#define STOP_ZONE_WIDTH 1.0
+
+// True and False values for the stop zone clear topic
+#define TRUE 1.0
+#define FALSE 0.0
+
+// Array of distances from the ultrasonics
+float ultrasonic_distances[7];
+
+/* Not being used right now - to slow to react
+void _callback_laserscan( const sensor_msgs::LaserScan scanner){
+
+	std_msgs::Float32 stop_clear_value;
+
+	int index = 0;
+	float width = 1.0;
+	float x,y;
+
+    float stop_zone_length = current_cart_speed * current_cart_speed / DECELERATION_CONSTANT;
+    if (stop_zone_length < MIN_STOP_ZONE_LENGTH) {
+        stop_zone_length = MIN_STOP_ZONE_LENGTH;
+    }
+
+	for(float f=scanner.angle_min; f<scanner.angle_max; f+=scanner.angle_increment){
+
+        y = scanner.ranges[index] * sin(-f);
+
+        if(y < STOP_ZONE_WIDTH/2 && y > -STOP_ZONE_WIDTH/2){
+
+            x = scanner.ranges[index]*cos(f);
+
+			if(x > 0.0 && x <= stop_zone_length){
+				stop_clear_value.data = FALSE;
+				pub_stop_clear.publish(stop_clear_value);
+				return;
+			}
+
+		}
+		index++;
+	}
+
+	stop_clear_value.data = TRUE;
+	pub_stop_clear.publish(stop_clear_value);
+
+} */
+
+void _callback_ultrasonic_1 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[0] = distance.data;
+}
+
+void _callback_ultrasonic_2 (const std_msgs::Float32 distance) {
+    //ultrasonic_distances[1] = distance.data;
+    ultrasonic_distances[1] = 999.0; // Disable this sensor for now
+}
+
+void _callback_ultrasonic_3 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[2] = distance.data;
+}
+
+void _callback_ultrasonic_4 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[3] = distance.data;
+}
+
+void _callback_ultrasonic_5 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[4] = distance.data;
+}
+
+void _callback_ultrasonic_6 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[5] = distance.data;
+}
+
+void _callback_ultrasonic_7 (const std_msgs::Float32 distance) {
+    ultrasonic_distances[6] = distance.data;
+}
+
+void _callback_cart_speed (const std_msgs::Float32 speed) {
+    current_cart_speed = speed.data;
+}
+
+int main(int argc, char **argv){
+
+	ros::init(argc, argv, "saftey_zone");
+
+	ros::NodeHandle n;
+
+	pub_stop_clear = n.advertise<std_msgs::Float32>("stop_zone_clear", 50);
+
+	//sub_laserscan = n.subscribe<sensor_msgs::LaserScan>("laser", 100, _callback_laserscan);
+
+    sub_cart_speed = n.subscribe<std_msgs::Float32>("cart_odom_speed", 10, _callback_cart_speed);
+
+    sub_ultrasonic_1 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_1", 10, _callback_ultrasonic_1);
+
+    sub_ultrasonic_2 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_2", 10, _callback_ultrasonic_2);
+
+    sub_ultrasonic_3 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_3", 10, _callback_ultrasonic_3);
+
+    sub_ultrasonic_4 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_4", 10, _callback_ultrasonic_4);
+
+    sub_ultrasonic_5 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_5", 10, _callback_ultrasonic_5);
+
+    sub_ultrasonic_6 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_6", 10, _callback_ultrasonic_6);
+
+    sub_ultrasonic_7 = n.subscribe<std_msgs::Float32>("sensor_ultrasonic_7", 10, _callback_ultrasonic_7);
+
+    // Message for the stop zone clear value
+    std_msgs::Float32 stop_clear_value;
+
+    // Length of the stop zone
+    float stop_zone_length;
+
+    // ROS rate in Hz
+    ros::Rate loop_rate(10);
+
+    while (ros::ok()) {
+
+        ros::spinOnce();
+
+        // Update length of the stop zone based on speed
+        stop_zone_length = current_cart_speed * current_cart_speed / DECELERATION_CONSTANT;
+        if (stop_zone_length < MIN_STOP_ZONE_LENGTH) {
+            stop_zone_length = MIN_STOP_ZONE_LENGTH;
+        }
+
+        // Reset the stop_zone_clear message and evaluate
+
+        stop_clear_value.data = TRUE;
+	
+	int num_false = 0;
+
+        for (int i=0; i<7; i++) {
+            if (ultrasonic_distances[i] <= stop_zone_length) {
+		num_false++;                
+		//stop_clear_value.data = FALSE;
+            }
+        }
+
+	if (num_false >= 3) {
+		stop_clear_value.data = FALSE;
+	}
+
+        pub_stop_clear.publish(stop_clear_value);
+
+        loop_rate.sleep();
+
+    }
+
+	return 0;
+}

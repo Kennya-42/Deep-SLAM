@@ -1,0 +1,105 @@
+Using Ubuntu 14.04.05
+ROS version Indigo
+FULL INSTALLATION INSTRUCTIONS
+
+sublime Text 3 (Optional: This is a great text editor):
+sudo add-apt-repository ppa:webupd8team/sublime-text-3
+sudo apt-get update
+sudo apt-get install sublime-text-installer
+
+sudo apt-get install git xclip
+
+Setting up a key for the repo:
+cd
+mkdir .ssh
+cd .ssh
+ssh-keygen -t rsa -C "APM_Key" -b 4096
+Name the file id_rsa
+Enter a passphrase
+xclip -sel clip < ~/.ssh/id_rsa.pub
+Go to kgcoe-git.rit.edu
+Login using RIT credentials
+Top right of the screen click the drop down menu and click profile settings
+Top part of the screen click SSH Keys
+Paste the key copied with the xclip command into the big key box
+Click add key.
+
+Install ROS Indigo:
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-get update
+sudo apt-get install ros-indigo-desktop-full
+sudo rosdep init
+rosdep update
+echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+NOTE: After every ROS pakage installation this command needs to be run in the top catkin workspace directory which will be made later. This command will take care of all dependancy issues. If it does not, try sudo apt-get install ros-indigo-PACKAGE_NAME on the package that it depends on.
+rosdep install --from-paths src --ignore-src --rosdistro indigo -y
+
+Install Catkin Tools:
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install python-catkin-tools
+
+<<<<<<< HEAD
+Setting up a key for the repo:
+cd
+mkdir .ssh
+cd .ssh
+ssh-keygen -t rsa -C "GitLab" -b 4096
+Name the file: id_rsa
+Enter a passphrase
+xclip -sel clip < ~/.ssh/id_rsa.pub (copy the contents of id_rsa.pub)
+Go to kgcoe-git.rit.edu
+Login using RIT credentials
+Top right of the screen click the drop down menu and click profile settings
+Top part of the screen click SSH Keys
+Paste the key copied with the xclip command into the big key box
+Click add key.
+
+=======
+>>>>>>> master
+Downloading Repos:
+cd
+This is the Phase 3 Repo (if you want it)
+git clone git@kgcoe-git.rit.edu:autonomous-golf-cart/golf-cart.git
+This is the Phase 4 Repo
+git clone git@kgcoe-git.rit.edu:autonomous-golf-cart/apm_phase4.git
+
+Setting up new a catkin workspace:
+cd
+mkdir -p apm_phase4/catkin_ws/src apm_phase4/catkin_ws/build apm_phase4/catkin_ws/devel apm_phase4/catkin_ws/logs
+cd apm_phase4/catkin_ws
+catkin config --extend /opt/ros/indigo
+rosdep install --from-paths src --ignore-src --rosdistro indigo -y
+Note: Before building install the ROS Packages need (See below)
+catkin build
+echo "source ~/apm_phase4/catkin_ws/devel/setup.bash" >> ~/.bashrc
+NOTES:
+"catkin build" builds everything in the src directory. Call it in the catkin_ws directory. This command is your friend and you will use it to build any packages you decide to add.
+Call the above rosdep function in the catkin_ws directory and anytime after you add a new package, but before building the package.
+
+Setting up the LIDAR:
+Navigate to /etc/network/ and edit the interfaces file
+Add to the end of the file:
+auto eth0
+iface eth0 inet static
+    address 192.168.3.100
+    gateway 192.168.3.1
+    netmask 255.255.255.0
+up route add 192.168.1.201 eth0
+
+ROS Packages Needed:
+sudo apt-get install ros-indigo-razor-imu-9dof 
+sudo apt-get install ros-indigo-slam-gmapping 
+sudo apt-get install ros-indigo-geographic-info 
+sudo apt-get install ros-indigo-map-server 
+
+Packages that should be in catkin_ws/src:
+apm_autonomous
+rosdue
+rqt_apm_modecontrol
+rqt_apm_speedometer
+velodyne
+perception_pcl-indigo-devel
