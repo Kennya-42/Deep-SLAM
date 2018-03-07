@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+
+<launch>
+    <node pkg="apm_odom" type="apm_odom" name="apm_odom"></node>
+
+</launch>

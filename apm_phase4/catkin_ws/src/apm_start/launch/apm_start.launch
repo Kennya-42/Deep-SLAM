@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<launch>
+    <!-- DUE's were removed from the start up script due to odd interactions that caused them to crash and the cart to run away.  Addeding the to the start script requires code changes in the rosdue node  -->
+    
+    <!-- DUE1 and DUE2 may swap depending on which one connects to the PC first -->
+    <!-- <node pkg="rosdue" type="serial_due.py" name="due1" output="screen">
+        <param name="port" value="/dev/ttyACM0"/>
+    </node>
+
+    <node pkg="rosdue" type="serial_due.py" name="due2" output="screen">
+        <param name="port" value="/dev/ttyACM1"/>
+    </node> -->
+
+    <include file="$(find apm_tf)/launch/apm_tf.launch" />
+    
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch" />
+
+    <include file="$(find urg_node)/launch/urg_lidar.launch" /> 
+    
+    <include file="$(find pointcloud_to_laserscan)/launch/p2l_2.launch"/> 
+    
+    <!-- This node was for testing only  -->
+    <!-- <node pkg="sicktoolbox_wrapper" type="sicklms" name="sicklms" output="screen">
+        <arg name="port" value="/dev/ttyUSB2"/>
+        <arg name="buad" value="38400"/>
+    </node> -->
+
+    <include file="$(find laser_scan_matcher)/launch/scan_matcher.launch"/>
+
+    <include file="$(find apm_odom)/launch/apm_odom.launch" />
+
+    <!-- Temporarily commented to remove imu from the robotlocalization ekf  -->
+    <!-- <include file="$(find razor_imu_9dof)/launch/razor-pub.launch" />     -->
+
+    <include file="$(find robot_localization)/launch/ekf_template.launch"/>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/apm/operating_maps/unity_may_25000_2.yaml" />
+
+    <include file="$(find amcl)/examples/amcl_diff.launch" />
+
+    <node pkg="teb_local_planner_tutorials" type="cmd_vel_to_ackermann_drive.py" name="cmd_vel_converter" output="screen"/>
+
+    <include file="$(find apm_2dnav)/launch/move_base.launch" />
+
+  <!--   <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
+
+    <node pkg="rqt_gui" type='rqt_gui' name='rqt'/> -->
+
+</launch>
