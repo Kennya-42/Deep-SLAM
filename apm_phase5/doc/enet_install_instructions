@@ -1,0 +1,68 @@
+Instructions for Ubuntu 14.04, for other versions of Ubuntu, see http://caffe.berkeleyvision.org/install_apt.html for differences in dependencies or the build process.
+
+Set graphics driver to latest proprietary NVIDIA driver
+Install CUDA 8 from .run file
+
+Install opencv using the install_opencv.sh script
+	Place this in the apm_phase5 folder
+	Get something to eat, this takes a while
+
+Grab all the dependencies
+sudo apt-get install libatlas-base-dev git unzip
+sudo apt-get update
+sudo apt-get install python-skimage # python-opencv might be unnecessary
+sudo apt-get install libboost-all-dev
+sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libboost-all-dev libhdf5-serial-dev
+sudo apt-get install libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
+sudo apt-get install libatlas-base-dev
+
+Clone ENet from https://github.com/TimoSaemann/ENet
+	Also clone caffe-enet into ENet directory https://github.com/TimoSaemann/caffe-enet/tree/2b569703f07df27a4af402d5230313f9e85b5836
+
+Gather python dependencies
+$ sudo apt-get install python-pip
+Update pip
+$ sudo pip install -U pip
+$ python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+$ cd python
+This one might take a while
+$ for req in $(cat requirements.txt); do sudo pip install $req; done
+
+Note: do this only if you want to build without CMake
+Copy Makefile.config.example to Makefile.config and open in editor
+	Uncomment the following lines:
+
+	WITH_PYTHON_LAYER := 1 
+	OPENCV_VERSION := 3
+
+	Modify the LIBRARY_DIRS to appear as below:
+
+	LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial /usr/local/share/OpenCV/3rdparty/lib/
+
+	This ensures caffe is built with the same version of OpenCV used by the perspective mapping routine
+
+Make a folder named "build" in the ENet directory and cd into it
+$ cmake ..
+
+Build caffe-enet and python libraries
+	Note: -j<#> tells make how many threads to use for compilation
+$ make all -j16 && make install
+	Note: if there's a build error related to cuDNN, open the CMakeLists.txt file in caffe-enet/ and disable cuDNN (line 30)
+
+Add the caffe python library to your python path
+$ export CAFFE_ROOT=/home/apm/apm_phase5/ENet/caffe-enet
+$ export PYTHONPATH="$CAFFE_ROOT/python:$PYTHONPATH"
+$ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
+Put the above commands in your .bashrc so you don't need to run them everytime you open a terminal
+
+You can test ENet with the following commands (make sure the file locations are good)
+Download the example cityscapes
+$ cd ../enet_weights_zoo
+$ sh cityscapes_weights.sh
+Run the test script with the downloaded model weights
+$ cd ../scripts
+$ python test_segmentation.py --model ~/apm_phase5/ENet/prototxts/enet_deploy_final.prototxt --weights ~/apm_phase5/ENet/enet_weights_zoo/cityscapes_weights.caffemodel --colours ~/apm_phase5/ENet/scripts/cityscapes19.png --input_image ~/apm_phase5/ENet/example_image/munich_000000_000019_leftImg8bit.png --out_dir ~/apm_phase5/ENet/example_image/
+
+If the install is good then you should see a segmented road scene image in the following directory:
+/home/apm/apm_phase5/ENet/example_image
+
