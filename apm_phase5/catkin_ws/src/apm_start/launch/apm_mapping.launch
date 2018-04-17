@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<launch>
+	<include file="$(find apm_tf)/launch/apm_tf.launch" />
+
+	<include file="$(find laser_scan_matcher)/launch/scan_matcher.launch"/>
+
+    <include file="$(find apm_odom)/launch/apm_odom.launch" />
+
+    <include file="$(find robot_localization)/launch/ekf_template.launch"/>
+
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch" />
+
+    <!-- This ground detection was not well enough documented to be used successfully by us -->
+    <!--<include file="$(find semantic_point_annotator)/launch/ground_plane.launch" />-->
+    <include file="$(find pointcloud_to_laserscan)/launch/p2l_2.launch" />
+
+    <include file="$(find gmapping)/launch/slam_gmapping_apm.launch" />
+
+</launch>

@@ -1,0 +1,9 @@
+catkin_ws/build/
+catkin_ws/devel/
+.DS_Store
+catkin_ws/.catkin_tools/
+
+opencv/
+opencv_contrib/
+ENet/
+backups/

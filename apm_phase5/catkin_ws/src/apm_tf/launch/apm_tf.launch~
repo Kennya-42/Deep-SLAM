@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<launch>
+<!-- ................................................................................ -->
+								<!-- Old Transforms -->
+
+	<!-- LiDAR - Front - 10 degree Tilt Forward-->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="0 0 0.965 0 0.17453 0 base_link velodyne 100" />
+    -->
+   
+   	<!-- LiDAR - Front - 7.5 degree Tilt Foward-->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="0 0 0.965 0 0.1309 0 base_link velodyne 100" />
+    -->
+
+    <!-- LiDAR - Top -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster" 
+		  args="0.6096 0 1.83515 0 0 0 base_link velodyne 100" />
+	-->
+
+<!-- ................................................................................ -->
+								<!-- LiDAR Testing -->
+
+    <!-- Transform with tilt-->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.4859 0 0.965 0 0.1396 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.4859 0 0.965 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, one cinder block height -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.7272 0 0.235 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, two cinder block height -->
+    <!-- This one reduces false ground line scan classification -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.7272 0 0.410 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- This one is the height for the middle of the 16 channel LiDAR -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.7272 0 0.432 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, two cinder block height -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.7272 0 0.622 0 0 0 base_link velodyne 100" />
+	-->
+
+<!-- ................................................................................ -->
+								<!-- Other Transforms -->
+
+	<!-- Velodyne Raw Data Transform -->
+	<!-- <node pkg="tf" type="static_transform_publisher" name="vel_tf_broadcaster" 
+		  args="1.4859 0 0.965 0 0 0 base_link vel_tf 100"/>
+	-->
+
+<!-- ................................................................................ -->
+								<!-- Current Transforms -->
+
+	<!-- Camera -->
+	<node pkg="tf" type="static_transform_publisher" name="camera_broadcaster" args="1.4605 0 1.7016 0 0.5585 0 base_link camera 100"/>
+
+	<!-- LiDAR - Front - No Tilt -->
+    <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.4859 0 0.965 0 0 0 base_link velodyne 100" />
+
+    <!-- Velodyne Heightmap -->
+	<node pkg="tf" type="static_transform_publisher" name="hm_broadcaster" 
+		  args="1.4859 0 0 0 0 0 base_link heightmap 100"/>
+
+	<!-- Single Channel Hokuyo LiDAR -->
+	<node pkg="tf" type="static_transform_publisher" name="laser_broadcaster" 
+		  args="1.7272 0.0047625 0.235 0 0 0 base_link laser 100"/>
+
+	<!-- IMU (not currently utilized) -->
+	<node pkg="tf" type="static_transform_publisher" name="baselink_imu_broadcaster"
+          args="1.2 0 1.8288 3.14159 0 0 base_link base_imu_link 100" />
+
+</launch>

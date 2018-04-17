@@ -1,0 +1,3 @@
+sudo apt install liblapacke-dev
+
+# install instructions here: https://milq.github.io/install-opencv-ubuntu-debian/

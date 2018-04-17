@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="apm_ui" type="rqt_apm_ui.rqt_apm_ui_module.apm_ui" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      A Python GUI for allowing the operator to change to mode of the APM, input destinations, and show important information
+    </description>
+    <qtgui>
+      <group>
+        <label>APM</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to the APM.</statustip>
+      </group>
+      <label>UI</label>
+      <icon type="theme">applications-other</icon>
+      <statustip>A Python GUI plugin for showing the UI</statustip>
+    </qtgui>
+  </class>
+</library>
