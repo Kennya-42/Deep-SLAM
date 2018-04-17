@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-
-
-<launch>
-    <node pkg="apm_pc2_pc" type="apm_pc2_pc" name="apm_pc2_pc"></node>
-
-</launch>

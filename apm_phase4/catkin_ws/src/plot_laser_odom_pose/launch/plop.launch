@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-
-<launch>
-    <node pkg="plot_laser_odom_pose" type="plot_laser_odom_pose_node" name="plop"></node>
-
-</launch>
